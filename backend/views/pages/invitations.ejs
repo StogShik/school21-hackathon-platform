@@ -1,0 +1,20 @@
+<%- include('../partials/header.ejs', { title: 'Приглашения', user: user }) %>
+<h1>Приглашения</h1>
+<% if (invitations.length > 0) { %>
+  <ul class="list-group">
+    <% invitations.forEach(invite => { %>
+      <li class="list-group-item">
+        Приглашение от <strong><%= invite.inviter.username %></strong> в команду <strong><%= invite.team.name %></strong>.
+        <form action="/invitations/<%= invite._id %>/accept" method="POST" style="display:inline;">
+          <button type="submit" class="btn btn-success btn-sm">Принять</button>
+        </form>
+        <form action="/invitations/<%= invite._id %>/decline" method="POST" style="display:inline;">
+          <button type="submit" class="btn btn-danger btn-sm">Отклонить</button>
+        </form>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %>
+  <p>У вас нет новых приглашений.</p>
+<% } %>
+<%- include('../partials/footer.ejs') %>

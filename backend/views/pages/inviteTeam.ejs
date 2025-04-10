@@ -1,0 +1,10 @@
+<%- include('../partials/header.ejs', { title: 'Пригласить участника', user: user }) %>
+<h1>Пригласить участника в команду "<%= team.name %>"</h1>
+<form action="/team/<%= team._id %>/invite" method="POST">
+  <div class="form-group">
+    <label for="inviteeUsername">Имя пользователя для приглашения</label>
+    <input type="text" name="inviteeUsername" id="inviteeUsername" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-success">Отправить приглашение</button>
+</form>
+<%- include('../partials/footer.ejs') %>

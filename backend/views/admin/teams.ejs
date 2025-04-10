@@ -1,0 +1,42 @@
+<%- include('./admin_header.ejs', { title: 'Команды', user: user, error: error, success: success }) %>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>GitHub-ссылка</th>
+            <th>Участники</th>
+            <th>Дата создания</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <% teams.forEach(team => { %>
+            <tr>
+                <td><%= team.name %></td>
+                <td>
+                    <% if(team.githubLink){ %>
+                        <a href="<%= team.githubLink %>" target="_blank"><%= team.githubLink %></a>
+                    <% } else { %>
+                        -
+                    <% } %>
+                </td>
+                <td>
+                    <% if(team.members && team.members.length > 0) { %>
+                        <%= team.members.map(member => member.username).join(', ') %>
+                    <% } else { %>
+                        Нет участников
+                    <% } %>
+                </td>
+                <td><%= new Date(team.createdAt).toLocaleDateString() %></td>
+                <td>
+
+                    <button type="button" class="btn btn-outline-danger btn-sm">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+<%- include('../partials/footer.ejs') %>

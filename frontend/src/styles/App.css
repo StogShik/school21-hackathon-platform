@@ -1,0 +1,28 @@
+/* Общие отступы и настройки */
+body {
+  background-color: #f8f9fa;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Сделать так, чтобы футер всегда был внизу страницы */
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1 0 auto;
+}
+
+/* Дополнительные стили для навбара и футера */
+.navbar {
+  margin-bottom: 20px;
+}
+
+.footer {
+  flex-shrink: 0;
+}
