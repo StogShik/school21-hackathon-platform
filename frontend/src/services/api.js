@@ -1,8 +1,21 @@
-import axios from 'axios';
+import apiClient from './api/apiClient';
+import authService from './api/authService';
+import teamService from './api/teamService';
+import invitationService from './api/invitationService';
+import dashboardService from './api/dashboardService';
+import casesService from './api/casesService';
+import adminService from './api/adminService';
 
-const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000', // URL вашего бэкенда
-  withCredentials: true, // если используются куки для сессии
-});
+// Re-export all services to maintain compatibility with existing imports
+export { 
+  apiClient as api, 
+  authService, 
+  teamService, 
+  invitationService, 
+  dashboardService, 
+  casesService,
+  adminService 
+};
 
-export default api;
+// Also export default for compatibility
+export default apiClient;

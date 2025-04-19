@@ -1,12 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 function Header() {
-  // Здесь можно добавить логику проверки авторизации
-  const user = null; // Например, можно получить пользователя через контекст
+  const { currentUser, isAuthenticated, isAdmin, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand" to="/">Платформа Хакатона</Link>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -14,13 +20,21 @@ function Header() {
         </button>
         <div className="collapse navbar-collapse" id="mainNav">
           <ul className="navbar-nav ml-auto">
-            {user ? (
+            <li className="nav-item">
+              <Link className="nav-link" to="/cases">Кейсы</Link>
+            </li>
+            {isAuthenticated ? (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard">Личный кабинет</Link>
                 </li>
+                {isAdmin && (
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/admin">Админ панель</Link>
+                  </li>
+                )}
                 <li className="nav-item">
-                  <Link className="nav-link" to="/auth/logout">Выход</Link>
+                  <button onClick={handleLogout} className="btn btn-link nav-link">Выход</button>
                 </li>
               </>
             ) : (

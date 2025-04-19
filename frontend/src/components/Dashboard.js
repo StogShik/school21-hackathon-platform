@@ -1,55 +1,114 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api'; // сервис для API запросов
+import { dashboardService, invitationService } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 function Dashboard() {
   const [teams, setTeams] = useState([]);
   const [invitations, setInvitations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    // Пример запроса к API (предполагается, что бэкенд возвращает данные для dashboard)
-    api.get('/dashboard')
-      .then((res) => {
-        // Ожидаем структуру { teams, invitations }
-        setTeams(res.data.teams);
-        setInvitations(res.data.invitations);
-      })
-      .catch((err) => console.error('Ошибка загрузки данных', err));
+    const fetchDashboard = async () => {
+      try {
+        const { data } = await dashboardService.getDashboard();
+        setTeams(data.teams || []);
+        setInvitations(data.invitations || []);
+      } catch (err) {
+        console.error('Ошибка загрузки данных', err);
+        setError('Ошибка загрузки данных');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
   }, []);
 
+  const handleAcceptInvitation = async (inviteId) => {
+    try {
+      await invitationService.acceptInvitation(inviteId);
+      // Обновляем списки после принятия
+      const newInvitations = invitations.filter(invite => invite._id !== inviteId);
+      setInvitations(newInvitations);
+      // Перезагрузим информацию о командах
+      const { data } = await dashboardService.getDashboard();
+      setTeams(data.teams || []);
+    } catch (err) {
+      console.error('Ошибка при принятии приглашения', err);
+      setError('Ошибка при принятии приглашения');
+    }
+  };
+
+  const handleDeclineInvitation = async (inviteId) => {
+    try {
+      await invitationService.declineInvitation(inviteId);
+      // Обновляем список после отклонения
+      const newInvitations = invitations.filter(invite => invite._id !== inviteId);
+      setInvitations(newInvitations);
+    } catch (err) {
+      console.error('Ошибка при отклонении приглашения', err);
+      setError('Ошибка при отклонении приглашения');
+    }
+  };
+
+  if (loading) return <p>Загрузка...</p>;
+  
   return (
     <div>
       <h1>Личный кабинет</h1>
+      <p>Привет, {currentUser?.username}!</p>
+      
+      {error && <div className="alert alert-danger">{error}</div>}
       
       <section className="mt-4">
         <h2>Ваши команды</h2>
         {teams.length > 0 ? (
-          <ul className="list-group">
+          <div className="list-group">
             {teams.map((team) => (
-              <li key={team._id} className="list-group-item">
-                <Link to={`/team/${team._id}`}>{team.name}</Link>
-              </li>
+              <Link key={team._id} to={`/team/${team._id}`} className="list-group-item list-group-item-action">
+                <strong>{team.name}</strong>
+                {team.githubLink && <br />}
+                {team.githubLink && <>GitHub: {team.githubLink}</>}
+              </Link>
             ))}
-          </ul>
+          </div>
         ) : (
-          <p>У вас пока нет команд.</p>
+          <p>Ты не состоишь ни в одной команде.</p>
         )}
-        <Link to="/team/create" className="btn btn-success mt-2">Создать команду</Link>
+        <div className="mb-3 mt-3">
+          <Link to="/team/create" className="btn btn-success">Создать новую команду</Link>
+        </div>
       </section>
-
+      
       <section className="mt-4">
         <h2>Приглашения</h2>
         {invitations.length > 0 ? (
-          <ul className="list-group">
+          <ul className="list-group mb-4">
             {invitations.map((invite) => (
               <li key={invite._id} className="list-group-item">
-                Приглашение в команду <strong>{invite.team.name}</strong> от <strong>{invite.inviter.username}</strong>
-                {/* Здесь можно добавить кнопки для принятия/отклонения */}
+                Приглашение от <strong>{invite.inviter.username}</strong> в команду <strong>{invite.team.name}</strong>.
+                <div className="mt-2">
+                  <button 
+                    className="btn btn-success btn-sm mr-2"
+                    onClick={() => handleAcceptInvitation(invite._id)}
+                  >
+                    Принять
+                  </button>
+                  <button 
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDeclineInvitation(invite._id)}
+                  >
+                    Отклонить
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
         ) : (
-          <p>Новых приглашений нет.</p>
+          <p>У вас нет новых приглашений.</p>
         )}
       </section>
     </div>
