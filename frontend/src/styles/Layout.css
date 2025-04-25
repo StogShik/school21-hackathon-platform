@@ -1,4 +1,3 @@
-/* Layout-specific styles */
 #root {
   display: flex;
   flex-direction: column;
@@ -19,7 +18,6 @@
   margin-top: auto;
 }
 
-/* For pages with minimal content */
 .page-min-height {
-  min-height: calc(100vh - 180px); /* Adjust based on header/footer height */
+  min-height: calc(100vh - 180px); 
 }

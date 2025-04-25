@@ -4,7 +4,6 @@ const { ensureAuthenticated } = require('../../utils/auth');
 const Team = require('../../models/Team');
 const Invitation = require('../../models/Invitation');
 
-// Dashboard endpoint
 router.get('/', ensureAuthenticated, async (req, res) => {
     try {
         const teams = await Team.find({ members: req.user._id }).populate('members');

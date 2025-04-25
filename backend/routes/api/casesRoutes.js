@@ -5,7 +5,6 @@ const Case = require('../../models/Case');
 const path = require('path');
 const fs = require('fs');
 
-// Get all cases
 router.get('/', ensureAuthenticated, async (req, res) => {
     try {
         const cases = await Case.find({}).sort({ createdAt: -1 });
@@ -16,7 +15,6 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Ultra-simple direct file download approach
 router.get('/files/:filename', ensureAuthenticated, (req, res) => {
     try {
         const filename = req.params.filename;
@@ -25,7 +23,6 @@ router.get('/files/:filename', ensureAuthenticated, (req, res) => {
         console.log(`File request received for: ${filename}`);
         console.log(`Looking in path: ${filePath}`);
         
-        // Simple way - use res.download which handles most things
         res.download(filePath, (err) => {
             if (err) {
                 console.error(`Error sending file: ${err.message}`);

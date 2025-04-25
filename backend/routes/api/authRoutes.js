@@ -3,7 +3,6 @@ const router = express.Router();
 const passport = require('passport');
 const User = require('../../models/User');
 
-// Register endpoint
 router.post('/register', (req, res) => {
     const { username, telegram, password } = req.body;
     User.register(new User({ username, telegram }), password, (err, user) => {
@@ -23,7 +22,6 @@ router.post('/register', (req, res) => {
     });
 });
 
-// Login endpoint
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) {
@@ -51,7 +49,6 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
-// Get current user
 router.get('/current-user', (req, res) => {
     if (req.isAuthenticated()) {
         const { username, isAdmin, _id } = req.user;
@@ -60,7 +57,6 @@ router.get('/current-user', (req, res) => {
     res.status(401).json({ message: 'Не авторизован' });
 });
 
-// Logout endpoint
 router.get('/logout', (req, res) => {
     req.logout((err) => {
         if (err) { 

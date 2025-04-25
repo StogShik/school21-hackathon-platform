@@ -1,4 +1,3 @@
-// src/components/Cases.js
 import React, { useEffect, useState } from 'react';
 import { casesService } from '../services/api';
 
@@ -24,15 +23,12 @@ function Cases() {
     fetchCases();
   }, []);
 
-  // Function to open file in new tab instead of using download attribute
   const handleFileClick = (e, filename, originalName) => {
     e.preventDefault();
     
-    // Create the full URL
     const fileUrl = `/api/cases/files/${filename}`;
     console.log(`Opening file: ${fileUrl} (${originalName})`);
     
-    // Open in new tab
     window.open(fileUrl, '_blank');
   };
 

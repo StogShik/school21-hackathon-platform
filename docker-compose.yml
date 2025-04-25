@@ -1,8 +1,6 @@
 version: '3.8'
 
-networks:
-  web:
-    driver: bridge
+
 
 services:
   nginx:
@@ -10,14 +8,29 @@ services:
     container_name: nginx
     ports:
       - "80:80"
+      - "443:443"  # Добавлен порт для HTTPS
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf"
       - ./backend/uploads:/uploads
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot 
     depends_on:
       - backend
       - frontend
     networks:
-      - web
+      - external-network
+      - internal-network
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - nginx
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
   backend:
     build:
@@ -27,12 +40,9 @@ services:
     hostname: backend
     ports:
       - "3001:3000"
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/hackathon
-      - SESSION_SECRET=your_session_secret
-      - CORS_ORIGIN=http://localhost
-      - PORT=3000
-      - ADMIN_PASSWORD=admin123
+
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -40,7 +50,7 @@ services:
     depends_on:
       - mongo
     networks:
-      - web
+      - internal-network
     command: >
       sh -c "
         npm install &&
@@ -61,14 +71,14 @@ services:
     ports:
       - "3000:80"
     networks:
-      - web
+      - internal-network
 
   mongo:
     image: mongo:latest
     volumes:
       - mongo-data:/data/db
     networks:
-      - web
+      - internal-network
     ports:
       - "27017:27017"
 
@@ -86,7 +96,7 @@ services:
     depends_on:
       - mongo
     networks:
-      - web
+      - internal-network
     command: >
       sh -c "
         npm install &&
@@ -94,6 +104,13 @@ services:
         node admin-setup.js
       "
     restart: "no"
+
+networks:
+  internal-network:
+    driver: bridge
+    internal: true
+  external-network:
+    driver: bridge
 
 volumes:
   mongo-data:

@@ -1,4 +1,3 @@
-// src/components/CreateTeam.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { teamService } from '../services/api';

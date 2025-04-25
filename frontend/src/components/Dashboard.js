@@ -30,10 +30,8 @@ function Dashboard() {
   const handleAcceptInvitation = async (inviteId) => {
     try {
       await invitationService.acceptInvitation(inviteId);
-      // Обновляем списки после принятия
       const newInvitations = invitations.filter(invite => invite._id !== inviteId);
       setInvitations(newInvitations);
-      // Перезагрузим информацию о командах
       const { data } = await dashboardService.getDashboard();
       setTeams(data.teams || []);
     } catch (err) {
@@ -45,7 +43,6 @@ function Dashboard() {
   const handleDeclineInvitation = async (inviteId) => {
     try {
       await invitationService.declineInvitation(inviteId);
-      // Обновляем список после отклонения
       const newInvitations = invitations.filter(invite => invite._id !== inviteId);
       setInvitations(newInvitations);
     } catch (err) {

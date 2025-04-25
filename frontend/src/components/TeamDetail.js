@@ -1,4 +1,3 @@
-// src/components/TeamDetail.js
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { teamService } from '../services/api';
@@ -66,7 +65,6 @@ function TeamDetail() {
   if (error) return <div className="alert alert-danger">{error}</div>;
   if (!team) return <p>Команда не найдена</p>;
 
-  // Проверяем, является ли текущий пользователь участником команды
   const isMember = team.members.some(member => member._id === currentUser?.id);
 
   return (

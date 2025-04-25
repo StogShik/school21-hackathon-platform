@@ -1,4 +1,4 @@
-/* Заставляем html и body занимать полную высоту */
+
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -15,7 +15,6 @@ body {
   font-family: 'Roboto', sans-serif;
 }
 
-/* Основной блок с контентом должен расти, занимая пространство */
 .content-wrapper {
   flex: 1 0 auto;
   display: flex;

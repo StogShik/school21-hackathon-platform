@@ -25,7 +25,6 @@ function AdminNewCase() {
       formData.append('title', title);
       formData.append('description', description);
       
-      // Append each file to form data
       files.forEach(file => {
         formData.append('files', file);
       });

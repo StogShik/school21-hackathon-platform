@@ -7,7 +7,6 @@ const Case = require('../../models/Case');
 const upload = require('../../utils/fileUpload');
 const path = require('path');
 
-// Middleware to ensure admin access
 const ensureAdmin = (req, res, next) => {
     if (!req.user.isAdmin) {
         return res.status(403).json({ message: 'Доступ запрещён' });
@@ -15,7 +14,6 @@ const ensureAdmin = (req, res, next) => {
     next();
 };
 
-// Get all cases (admin)
 router.get('/cases', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const cases = await Case.find({}).sort({ createdAt: -1 });
@@ -26,7 +24,6 @@ router.get('/cases', ensureAuthenticated, ensureAdmin, async (req, res) => {
     }
 });
 
-// Create case with files (admin)
 router.post('/cases', ensureAuthenticated, ensureAdmin, upload.array('files', 5), async (req, res) => {
     const { title, description } = req.body;
     try {
@@ -51,7 +48,6 @@ router.post('/cases', ensureAuthenticated, ensureAdmin, upload.array('files', 5)
     }
 });
 
-// Delete case (admin)
 router.post('/cases/:id/delete', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         await Case.findByIdAndDelete(req.params.id);
@@ -62,7 +58,6 @@ router.post('/cases/:id/delete', ensureAuthenticated, ensureAdmin, async (req, r
     }
 });
 
-// Get all teams (admin)
 router.get('/teams', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const teams = await Team.find({}).populate('members').sort({ createdAt: -1 });
@@ -73,7 +68,6 @@ router.get('/teams', ensureAuthenticated, ensureAdmin, async (req, res) => {
     }
 });
 
-// Get all users (admin)
 router.get('/users', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const users = await User.find({}).sort({ username: 1 });
@@ -84,7 +78,6 @@ router.get('/users', ensureAuthenticated, ensureAdmin, async (req, res) => {
     }
 });
 
-// Delete user (admin)
 router.post('/users/:id/delete', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -95,7 +88,6 @@ router.post('/users/:id/delete', ensureAuthenticated, ensureAdmin, async (req, r
     }
 });
 
-// Promote user to admin (admin)
 router.post('/users/:id/promote', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -112,7 +104,6 @@ router.post('/users/:id/promote', ensureAuthenticated, ensureAdmin, async (req, 
     }
 });
 
-// Demote admin to user (admin)
 router.post('/users/:id/demote', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -129,7 +120,6 @@ router.post('/users/:id/demote', ensureAuthenticated, ensureAdmin, async (req, r
     }
 });
 
-// Delete team (admin)
 router.post('/teams/:id/delete', ensureAuthenticated, ensureAdmin, async (req, res) => {
     try {
         await Team.findByIdAndDelete(req.params.id);

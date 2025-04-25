@@ -13,14 +13,12 @@ import CreateTeam from './components/CreateTeam';
 import InviteTeam from './components/InviteTeam';
 import Cases from './components/Cases';
 
-// Административные компоненты
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminUsers from './components/admin/AdminUsers';
 import AdminTeams from './components/admin/AdminTeams';
 import AdminCases from './components/admin/AdminCases';
 import AdminNewCase from './components/admin/AdminNewCase';
 
-// Компонент для защищенных маршрутов
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   
@@ -35,7 +33,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Компонент для маршрутов администратора
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, isAdmin, loading } = useAuth();
   
