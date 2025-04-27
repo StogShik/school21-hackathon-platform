@@ -1,6 +1,8 @@
 version: '3.8'
 
-
+networks:
+  web:
+    driver: bridge
 
 services:
   nginx:
@@ -8,29 +10,14 @@ services:
     container_name: nginx
     ports:
       - "80:80"
-      - "443:443"  # Добавлен порт для HTTPS
     volumes:
       - "./nginx.conf:/etc/nginx/nginx.conf"
       - ./backend/uploads:/uploads
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot 
     depends_on:
       - backend
       - frontend
     networks:
-      - external-network
-      - internal-network
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    depends_on:
-      - nginx
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+      - web
 
   backend:
     build:
@@ -40,7 +27,6 @@ services:
     hostname: backend
     ports:
       - "3001:3000"
-
     env_file:
       - ./backend/.env
     volumes:
@@ -50,7 +36,7 @@ services:
     depends_on:
       - mongo
     networks:
-      - internal-network
+      - web
     command: >
       sh -c "
         npm install &&
@@ -71,14 +57,14 @@ services:
     ports:
       - "3000:80"
     networks:
-      - internal-network
+      - web
 
   mongo:
     image: mongo:latest
     volumes:
       - mongo-data:/data/db
     networks:
-      - internal-network
+      - web
     ports:
       - "27017:27017"
 
@@ -96,7 +82,7 @@ services:
     depends_on:
       - mongo
     networks:
-      - internal-network
+      - web
     command: >
       sh -c "
         npm install &&
@@ -104,13 +90,6 @@ services:
         node admin-setup.js
       "
     restart: "no"
-
-networks:
-  internal-network:
-    driver: bridge
-    internal: true
-  external-network:
-    driver: bridge
 
 volumes:
   mongo-data:
