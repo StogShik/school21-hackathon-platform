@@ -73,9 +73,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: init-admin
-    environment:
-      - MONGODB_URI=mongodb://mongo:27017/hackathon
-      - ADMIN_PASSWORD=admin123
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
     working_dir: /app
